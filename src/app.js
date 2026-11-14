@@ -232,6 +232,20 @@ const bindTimerControls = () => {
   $('#onAirTimerReset').addEventListener('click', resetTimer)
 }
 
+const hostLines = [
+  '안녕하세요! 동해숭이 방송국입니다. 곧 방송을 시작할게요.',
+  '오늘도 게임을 만들고, 만든 과정을 함께 기록해 볼까요?',
+  '잠시 후 개발 방송을 시작합니다. 편하게 구경해 주세요.',
+  '방송이 끝나면 오늘 만든 내용을 개발 기록으로 남길게요.'
+]
+let hostLineIndex = 0
+const renderHostLine = () => {
+  $('#hostSpeech').textContent = hostLines[hostLineIndex]
+}
+const showNextHostLine = () => {
+  hostLineIndex = (hostLineIndex + 1) % hostLines.length
+  renderHostLine()
+}
 const renderOnAir = () => {
   $('#onAirGenre').textContent = broadcast.game.genre
   $('#onAirTitle').textContent = broadcast.game.title
@@ -308,6 +322,7 @@ renderConversations('#channelConversationList', '#channelConversationCount')
 bindConversationForm('#dashboardConversationForm', '#conversationInput', '#conversationList', '#conversationCount')
 bindConversationForm('#channelConversationForm', '#channelConversationInput', '#channelConversationList', '#channelConversationCount')
 bindTimerControls()
+$('#hostNextLine').addEventListener('click', showNextHostLine)
 
 const githubCommitsUrl = 'https://api.github.com/repos/jes79/dev-studio-broadcast/commits?per_page=3'
 const formatCommitDate = value => new Intl.DateTimeFormat('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(value)).replaceAll(' ', '')
