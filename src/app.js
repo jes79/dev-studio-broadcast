@@ -10,8 +10,16 @@ const broadcast = {
     { tag: 'NOW BUILDING', title: '심상 배달', body: '골목을 달리는 2D 배달 액션 게임', progress: '32%' },
     { tag: 'LECTURE', title: 'Unity 입문 교안', body: '기능을 직접 만들며 배우는 수업 자료', progress: '준비 중' },
     { tag: 'SHOWROOM', title: '작품 전시관', body: '완성한 게임과 작업물을 모아 보는 공간', progress: '아이디어' }
+  ],
+  conversations: [
+    { speaker: '동해님', role: '결정', message: '개발 과정을 방송처럼 보여 주는 화면을 만들자.', time: '오늘 09:40', kind: 'human' },
+    { speaker: 'AI 제작실', role: '정리', message: '첫 버전은 현재 게임, 진행률, 최근 기록, 다음 작업부터 보여 주겠습니다.', time: '오늘 09:42', kind: 'ai' },
+    { speaker: '동해님', role: '다음 작업', message: '대화 섹션도 추가해 줘.', time: '방금 전', kind: 'human' }
   ]
 }
+const conversationKey = 'dev-studio-broadcast.conversations'
+const savedConversations = JSON.parse(localStorage.getItem(conversationKey) || 'null')
+if (Array.isArray(savedConversations)) broadcast.conversations = savedConversations
 const $ = selector => document.querySelector(selector)
 $('#gameGenre').textContent = broadcast.game.genre
 $('#gameTitle').textContent = broadcast.game.title
@@ -25,6 +33,21 @@ $('#nextType').textContent = broadcast.next.type
 $('#logCount').textContent = `${broadcast.logs.length}개의 기록`
 $('#logList').innerHTML = broadcast.logs.map(log => `<article class="log-card"><div class="log-date">${log.date}</div><h3>${log.title}</h3><p>${log.body}</p><small>${log.time}</small></article>`).join('')
 $('#channelList').innerHTML = broadcast.channels.map(channel => `<article class="channel-card"><div class="channel-tag">${channel.tag}</div><h3>${channel.title}</h3><p>${channel.body}</p><div class="channel-footer"><span>진행 상태</span><strong>${channel.progress}</strong></div></article>`).join('')
-$('#playVideo').addEventListener('click', () => broadcast.game.video === '#' ? alert('최근 영상 링크는 다음 단계에서 연결합니다.') : window.open(broadcast.game.video, '_blank'))
+const escapeHtml = value => String(value).replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]))
+const renderConversations = () => {
+  $('#conversationCount').textContent = `${broadcast.conversations.length}개의 대화`
+  $('#conversationList').innerHTML = broadcast.conversations.map(item => `<article class="conversation-item ${item.kind}"><div class="conversation-avatar">${item.kind === 'ai' ? 'AI' : '동'}</div><div><div class="conversation-meta"><strong>${escapeHtml(item.speaker)} · ${escapeHtml(item.role)}</strong><time>${escapeHtml(item.time)}</time></div><p>${escapeHtml(item.message)}</p></div></article>`).join('')
+}
+renderConversations()
+$('#conversationForm').addEventListener('submit', event => {
+  event.preventDefault()
+  const input = $('#conversationInput')
+  const message = input.value.trim()
+  if (!message) return
+  broadcast.conversations.push({ speaker: '동해님', role: '새 기록', message, time: '방금 전', kind: 'human' })
+  localStorage.setItem(conversationKey, JSON.stringify(broadcast.conversations))
+  input.value = ''
+  renderConversations()
+})
 $('#openRepo').addEventListener('click', () => window.open(broadcast.game.repo, '_blank'))
 $('#showAll').addEventListener('click', () => alert('작품 채널 전체 보기는 다음 버전에서 연결합니다.'))

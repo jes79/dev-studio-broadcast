@@ -54,6 +54,18 @@
       <div class="channel-grid" id="channelList"></div>
     </section>
 
+    <section class="section-block conversation-section">
+      <div class="section-heading"><div><p class="eyebrow">CONVERSATION</p><h2>개발 대화</h2></div><span id="conversationCount"></span></div>
+      <div class="conversation-layout">
+        <div class="conversation-list" id="conversationList"></div>
+        <form class="conversation-form" id="conversationForm">
+          <label for="conversationInput">새로운 생각이나 결정 기록</label>
+          <textarea id="conversationInput" rows="3" placeholder="예: 코인 획득을 다음 방송에서 만들자"></textarea>
+          <div class="conversation-form-footer"><span>이 브라우저에만 임시 저장됩니다.</span><button class="primary" type="submit">대화 남기기</button></div>
+        </form>
+      </div>
+    </section>
+
     <footer><span>dev-studio-broadcast</span><span>첫 방송 준비 중 · 오래 만드는 프로젝트</span></footer>
   </main>
   <script src="src/app.js"></script>
