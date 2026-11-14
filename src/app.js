@@ -30,6 +30,19 @@ const broadcast = {
   ]
 }
 
+const showroomWorks = [
+  {
+    id: 'simsang-delivery',
+    title: '심상 배달',
+    genre: '2D 픽셀 · 배달 액션',
+    summary: '배달원 심상이 골목을 달리며 오늘의 주문을 완성하는 게임입니다.',
+    status: '개발 중',
+    statusDescription: '아직 개발 중인 작품입니다. 공개 작품으로 등록할 준비를 하고 있습니다.',
+    videoUrl: null,
+    repo: broadcast.game.repo
+  }
+]
+
 const conversationKey = 'dev-studio-broadcast.conversations'
 const loadConversationStore = () => {
   try {
@@ -108,11 +121,38 @@ const renderChannelData = () => {
 const renderChannels = () => {
   $('#channelList').innerHTML = broadcast.channels.map(channel => {
     const content = `<div class="channel-tag">${escapeHtml(channel.tag)}</div><h3>${escapeHtml(channel.title)}</h3><p>${escapeHtml(channel.body)}</p><div class="channel-footer"><span>진행 상태</span><strong>${escapeHtml(channel.progress)}</strong></div>`
+    if (channel.tag === 'SHOWROOM') return `<a class="channel-card linked" href="#/showroom">${content}</a>`
     return channel.id
       ? `<a class="channel-card linked" href="#/channel/${escapeHtml(channel.id)}">${content}</a>`
       : `<article class="channel-card">${content}</article>`
   }).join('')
 }
+const renderShowroom = (workId = showroomWorks[0].id) => {
+  const work = showroomWorks.find(item => item.id === workId) || showroomWorks[0]
+  $('#showroomList').innerHTML = showroomWorks.map(item => {
+    const selected = item.id === work.id ? ' showroom-card-selected' : ''
+    return `<a class="showroom-card${selected}" href="#/showroom/${escapeHtml(item.id)}"><div class="channel-tag">PUBLIC WORK · ${escapeHtml(item.status)}</div><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.summary)}</p><div class="showroom-card-footer"><span>작품 상태</span><strong>${escapeHtml(item.status)}</strong></div></a>`
+  }).join('')
+  $('#showroomStatus').textContent = `${showroomWorks.length}개의 작품`
+  $('#showroomDetailTitle').textContent = work.title
+  $('#showroomDetailGenre').textContent = work.genre
+  $('#showroomDetailSummary').textContent = work.summary
+  $('#showroomDetailStatus').textContent = work.statusDescription
+  const videoStatus = $('#showroomVideoStatus')
+  videoStatus.innerHTML = work.videoUrl ? `<a href="${escapeHtml(work.videoUrl)}" target="_blank" rel="noreferrer">영상 보기</a>` : '영상 주소 없음'
+  videoStatus.classList.toggle('status-ready', Boolean(work.videoUrl))
+  $('#showroomVideoNote').textContent = work.videoUrl ? '등록된 영상으로 연결할 수 있습니다.' : '아직 실제 영상 주소가 등록되지 않았습니다. 영상이 준비되면 이곳에 연결됩니다.'
+  const repoLink = $('#showroomRepo')
+  if (work.repo) {
+    repoLink.href = work.repo
+    repoLink.hidden = false
+  } else {
+    repoLink.removeAttribute('href')
+    repoLink.hidden = true
+  }
+  $('#showroomChannel').href = `#/channel/${work.id}`
+}
+
 
 const renderConversations = (listSelector, countSelector) => {
   const conversations = getConversations()
@@ -137,16 +177,27 @@ const bindConversationForm = (formSelector, inputSelector, listSelector, countSe
 
 const renderRoute = () => {
   const channelRoute = `#/channel/${broadcast.game.id}`
-  const isChannel = window.location.hash === channelRoute
-  $('#dashboardView').hidden = isChannel
+  const hash = window.location.hash
+  const showroomId = hash.split('/')[2]
+  const isChannel = hash === channelRoute
+  const isShowroom = hash === '#/showroom' || (hash.startsWith('#/showroom/') && showroomWorks.some(work => work.id === showroomId))
+  if (hash.startsWith('#/showroom/') && !isShowroom) {
+    window.location.hash = '#/dashboard'
+    return
+  }
   $('#channelView').hidden = !isChannel
-  document.title = isChannel ? `${broadcast.game.title} · Dev Studio Broadcast` : 'Dev Studio Broadcast'
+  $('#showroomView').hidden = !isShowroom
+  if (isShowroom) renderShowroom(showroomId || showroomWorks[0].id)
+  document.title = isChannel
+    ? `${broadcast.game.title} · Dev Studio Broadcast`
+    : isShowroom ? '작품 전시관 · Dev Studio Broadcast' : 'Dev Studio Broadcast'
 }
 
 renderDashboardData()
 renderChannelData()
 renderChannels()
 renderConversations('#conversationList', '#conversationCount')
+renderShowroom()
 renderConversations('#channelConversationList', '#channelConversationCount')
 bindConversationForm('#dashboardConversationForm', '#conversationInput', '#conversationList', '#conversationCount')
 bindConversationForm('#channelConversationForm', '#channelConversationInput', '#channelConversationList', '#channelConversationCount')
@@ -183,7 +234,7 @@ $('#openRepo').addEventListener('click', () => {
   if (broadcast.game.repo) window.open(broadcast.game.repo, '_blank', 'noopener,noreferrer')
 })
 $('#showAll').addEventListener('click', () => {
-  window.location.hash = `#/channel/${broadcast.game.id}`
+  window.location.hash = '#/showroom'
 })
 $('#backToDashboard').addEventListener('click', () => {
   window.location.hash = '#/dashboard'

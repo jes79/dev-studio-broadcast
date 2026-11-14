@@ -112,6 +112,41 @@
       </section>
     </div>
 
+    <div id="showroomView" class="view" hidden>
+      <header class="channel-topbar">
+        <a class="text-button showroom-back" href="#/dashboard">← 대시보드로</a>
+        <p class="eyebrow">PUBLIC SHOWROOM</p>
+      </header>
+
+      <section class="showroom-intro">
+        <p class="eyebrow">SHOWROOM</p>
+        <h1>공개 작품 전시관</h1>
+        <p class="subcopy">완성된 작품과 공개 가능한 작업물을 한곳에서 소개합니다.</p>
+      </section>
+
+      <section class="section-block showroom-section">
+        <div class="section-heading"><div><p class="eyebrow">WORKS</p><h2>작품 목록</h2></div><span id="showroomStatus"></span></div>
+        <div class="showroom-grid" id="showroomList"></div>
+      </section>
+
+      <section class="section-block showroom-detail">
+        <div class="section-heading"><div><p class="eyebrow">SELECTED WORK</p><h2>작품 상세</h2></div><span class="work-status" id="showroomDetailStatus"></span></div>
+        <article class="broadcast-card">
+          <p class="project-kicker" id="showroomDetailGenre"></p>
+          <h2 id="showroomDetailTitle"></h2>
+          <p id="showroomDetailSummary"></p>
+          <div class="showroom-video-state">
+            <span id="showroomVideoStatus">영상 주소 없음</span>
+            <span id="showroomVideoNote">아직 실제 영상 주소가 등록되지 않았습니다.</span>
+          </div>
+          <div class="broadcast-actions">
+            <a class="secondary" id="showroomChannel" href="#/channel/simsang-delivery">채널 보기</a>
+            <a class="secondary" id="showroomRepo" target="_blank" rel="noreferrer">GitHub 열기</a>
+          </div>
+        </article>
+      </section>
+    </div>
+
     <footer><span>dev-studio-broadcast</span><span><a class="footer-link" href="https://github.com/jes79/dev-studio-broadcast/tree/master/conversations" target="_blank" rel="noreferrer">대화 이어하기 폴더</a> · 첫 방송 준비 중</span></footer>
   </main>
   <script src="src/app.js"></script>
