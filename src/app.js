@@ -152,6 +152,21 @@ const renderShowroom = (workId = showroomWorks[0].id) => {
   }
   $('#showroomChannel').href = `#/channel/${work.id}`
 }
+const renderOnAir = () => {
+  $('#onAirGenre').textContent = broadcast.game.genre
+  $('#onAirTitle').textContent = broadcast.game.title
+  $('#onAirSummary').textContent = broadcast.game.summary
+  $('#onAirProgressText').textContent = `${broadcast.game.progress}%`
+  $('#onAirProgressBar').style.width = `${broadcast.game.progress}%`
+  $('#onAirNextTitle').textContent = broadcast.next.title
+  $('#onAirNextDescription').textContent = broadcast.next.description
+  $('#onAirNextDate').textContent = broadcast.next.date
+  $('#onAirNextType').textContent = broadcast.next.type
+  renderLogs('#onAirLogList', '#onAirLogStatus', recentLogs.slice(0, 3), `${Math.min(recentLogs.length, 3)}개의 기록`)
+}
+
+
+
 
 
 const renderConversations = (listSelector, countSelector) => {
@@ -181,16 +196,21 @@ const renderRoute = () => {
   const showroomId = hash.split('/')[2]
   const isChannel = hash === channelRoute
   const isShowroom = hash === '#/showroom' || (hash.startsWith('#/showroom/') && showroomWorks.some(work => work.id === showroomId))
+  const isOnAir = hash === '#/on-air'
   if (hash.startsWith('#/showroom/') && !isShowroom) {
     window.location.hash = '#/dashboard'
     return
   }
+  $('#dashboardView').hidden = isChannel || isShowroom || isOnAir
   $('#channelView').hidden = !isChannel
   $('#showroomView').hidden = !isShowroom
+  $('#onAirView').hidden = !isOnAir
   if (isShowroom) renderShowroom(showroomId || showroomWorks[0].id)
+  if (isOnAir) renderOnAir()
   document.title = isChannel
     ? `${broadcast.game.title} · Dev Studio Broadcast`
-    : isShowroom ? '작품 전시관 · Dev Studio Broadcast' : 'Dev Studio Broadcast'
+    : isShowroom ? '작품 전시관 · Dev Studio Broadcast'
+      : isOnAir ? '녹화 준비 화면 · Dev Studio Broadcast' : 'Dev Studio Broadcast'
 }
 
 renderDashboardData()
@@ -220,9 +240,11 @@ const loadRecentCommits = async () => {
     recentLogs.splice(0, recentLogs.length, ...logs)
     renderLogs('#logList', '#logStatus', recentLogs, `GitHub 최근 ${logs.length}개`)
     renderLogs('#channelLogList', '#channelLogStatus', recentLogs, `GitHub 최근 ${logs.length}개`)
+    renderLogs('#onAirLogList', '#onAirLogStatus', recentLogs.slice(0, 3), `GitHub 최근 ${Math.min(logs.length, 3)}개`)
   } catch (error) {
     $('#logStatus').textContent = '샘플 기록 · GitHub 연결 대기'
     $('#channelLogStatus').textContent = '샘플 기록 · GitHub 연결 대기'
+    $('#onAirLogStatus').textContent = '샘플 기록 · GitHub 연결 대기'
     console.warn('GitHub 커밋을 불러오지 못했습니다.', error)
   }
 }

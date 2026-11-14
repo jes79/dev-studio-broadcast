@@ -12,7 +12,8 @@
 
 ## 현재 완료
 
-- `#/dashboard`, `#/channel/simsang-delivery`, `#/showroom` 해시 라우트
+- `#/dashboard`, `#/channel/simsang-delivery`, `#/showroom`, `#/on-air` 해시 라우트
+- 녹화용 방송 화면의 LIVE / ON AIR 상태, 현재 작업·진행률·다음 작업·최근 기록 표시
 - 개발 중 작품 카드와 상세 상태, 실제 영상 주소 없음 안내
 - GitHub 최근 커밋과 게임별 대화 저장 유지
 

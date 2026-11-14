@@ -15,7 +15,7 @@
           <h1>오늘의 개발 방송</h1>
           <p class="subcopy">만드는 과정을 방송처럼 기록하고 보여 주는 작업 전시관</p>
         </div>
-        <div class="live-pill"><span></span> 개발 중</div>
+        <div class="topbar-actions"><a class="primary topbar-link" href="#/on-air">방송 화면</a><div class="live-pill"><span></span> 개발 중</div></div>
       </header>
 
       <section class="hero-grid">
@@ -144,6 +144,42 @@
             <a class="secondary" id="showroomRepo" target="_blank" rel="noreferrer">GitHub 열기</a>
           </div>
         </article>
+      </section>
+    </div>
+    <div id="onAirView" class="view" hidden>
+      <header class="channel-topbar">
+        <a class="text-button" href="#/dashboard">← 방송국으로 돌아가기</a>
+        <p class="eyebrow">RECORDING VIEW</p>
+      </header>
+
+      <section class="on-air-intro">
+        <div class="on-air-status"><span class="signal-dot"></span><strong>ON AIR PREP</strong></div>
+        <p class="eyebrow">DEV STUDIO BROADCAST</p>
+        <h1>녹화 준비 화면</h1>
+        <p class="subcopy">실제 녹화·스트리밍 기능 없이, 방송에 담을 개발 현황을 보여 주는 화면입니다.</p>
+      </section>
+
+      <section class="hero-grid on-air-hero">
+        <article class="broadcast-card">
+          <div class="card-label">NOW BUILDING</div>
+          <p class="project-kicker" id="onAirGenre"></p>
+          <h2 id="onAirTitle"></h2>
+          <p id="onAirSummary"></p>
+          <div class="progress-row"><span>진행률</span><strong id="onAirProgressText"></strong></div>
+          <div class="progress-track"><span id="onAirProgressBar"></span></div>
+          <div class="on-air-ready">방송 준비 중 · 녹화 장비를 연결하면 시작할 수 있습니다.</div>
+        </article>
+        <aside class="next-card">
+          <div class="card-label">NEXT TASK</div>
+          <h3 id="onAirNextTitle"></h3>
+          <p id="onAirNextDescription"></p>
+          <div class="next-meta"><span id="onAirNextDate"></span><strong id="onAirNextType"></strong></div>
+        </aside>
+      </section>
+
+      <section class="section-block">
+        <div class="section-heading"><div><p class="eyebrow">RECENT LOG</p><h2>최근 개발 기록</h2></div><span id="onAirLogStatus"></span></div>
+        <div class="log-grid" id="onAirLogList"></div>
       </section>
     </div>
 
