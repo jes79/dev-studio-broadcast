@@ -152,6 +152,86 @@ const renderShowroom = (workId = showroomWorks[0].id) => {
   }
   $('#showroomChannel').href = `#/channel/${work.id}`
 }
+const timerStorageKey = 'dev-studio-broadcast.on-air-timer'
+const loadTimerState = () => {
+  try {
+    const saved = JSON.parse(localStorage.getItem(timerStorageKey) || '{}')
+    return {
+      elapsedMs: Number.isFinite(saved.elapsedMs) && saved.elapsedMs >= 0 ? saved.elapsedMs : 0,
+      running: saved.running === true,
+      startedAt: Number.isFinite(saved.startedAt) ? saved.startedAt : null
+    }
+  } catch {
+    return { elapsedMs: 0, running: false, startedAt: null }
+  }
+}
+const timerState = loadTimerState()
+let timerInterval = null
+const getElapsedMs = () => timerState.running && timerState.startedAt
+  ? timerState.elapsedMs + Math.max(0, Date.now() - timerState.startedAt)
+  : timerState.elapsedMs
+const formatTimer = milliseconds => {
+  const totalSeconds = Math.floor(milliseconds / 1000)
+  const hours = Math.floor(totalSeconds / 3600)
+  const minutes = Math.floor((totalSeconds % 3600) / 60)
+  const seconds = totalSeconds % 60
+  return [hours, minutes, seconds].map(value => String(value).padStart(2, '0')).join(':')
+}
+const saveTimerState = () => {
+  localStorage.setItem(timerStorageKey, JSON.stringify(timerState))
+}
+const renderTimer = () => {
+  const display = $('#onAirTimerDisplay')
+  if (!display) return
+  display.textContent = formatTimer(getElapsedMs())
+  const status = $('#onAirStatusLabel')
+  if (status) status.textContent = timerState.running ? '준비 중' : timerState.elapsedMs ? '일시정지' : '방송 준비'
+  const startButton = $('#onAirTimerStart')
+  const pauseButton = $('#onAirTimerPause')
+  if (startButton) startButton.disabled = timerState.running
+  if (pauseButton) pauseButton.disabled = !timerState.running
+}
+const stopTimerInterval = () => {
+  if (timerInterval !== null) {
+    window.clearInterval(timerInterval)
+    timerInterval = null
+  }
+}
+const startTimerInterval = () => {
+  stopTimerInterval()
+  if (timerState.running && window.location.hash === '#/on-air') timerInterval = window.setInterval(renderTimer, 1000)
+}
+const startTimer = () => {
+  if (timerState.running) return
+  timerState.startedAt = Date.now()
+  timerState.running = true
+  saveTimerState()
+  renderTimer()
+  startTimerInterval()
+}
+const pauseTimer = () => {
+  if (!timerState.running) return
+  timerState.elapsedMs = getElapsedMs()
+  timerState.startedAt = null
+  timerState.running = false
+  saveTimerState()
+  stopTimerInterval()
+  renderTimer()
+}
+const resetTimer = () => {
+  timerState.elapsedMs = 0
+  timerState.startedAt = null
+  timerState.running = false
+  saveTimerState()
+  stopTimerInterval()
+  renderTimer()
+}
+const bindTimerControls = () => {
+  $('#onAirTimerStart').addEventListener('click', startTimer)
+  $('#onAirTimerPause').addEventListener('click', pauseTimer)
+  $('#onAirTimerReset').addEventListener('click', resetTimer)
+}
+
 const renderOnAir = () => {
   $('#onAirGenre').textContent = broadcast.game.genre
   $('#onAirTitle').textContent = broadcast.game.title
@@ -163,6 +243,7 @@ const renderOnAir = () => {
   $('#onAirNextDate').textContent = broadcast.next.date
   $('#onAirNextType').textContent = broadcast.next.type
   renderLogs('#onAirLogList', '#onAirLogStatus', recentLogs.slice(0, 3), `${Math.min(recentLogs.length, 3)}개의 기록`)
+  renderTimer()
 }
 
 
@@ -206,7 +287,12 @@ const renderRoute = () => {
   $('#showroomView').hidden = !isShowroom
   $('#onAirView').hidden = !isOnAir
   if (isShowroom) renderShowroom(showroomId || showroomWorks[0].id)
-  if (isOnAir) renderOnAir()
+  if (isOnAir) {
+    renderOnAir()
+    startTimerInterval()
+  } else {
+    stopTimerInterval()
+  }
   document.title = isChannel
     ? `${broadcast.game.title} · Dev Studio Broadcast`
     : isShowroom ? '작품 전시관 · Dev Studio Broadcast'
@@ -221,6 +307,7 @@ renderShowroom()
 renderConversations('#channelConversationList', '#channelConversationCount')
 bindConversationForm('#dashboardConversationForm', '#conversationInput', '#conversationList', '#conversationCount')
 bindConversationForm('#channelConversationForm', '#channelConversationInput', '#channelConversationList', '#channelConversationCount')
+bindTimerControls()
 
 const githubCommitsUrl = 'https://api.github.com/repos/jes79/dev-studio-broadcast/commits?per_page=3'
 const formatCommitDate = value => new Intl.DateTimeFormat('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(value)).replaceAll(' ', '')

@@ -153,10 +153,26 @@
       </header>
 
       <section class="on-air-intro">
-        <div class="on-air-status"><span class="signal-dot"></span><strong>ON AIR PREP</strong></div>
+        <div class="on-air-status"><span class="signal-dot"></span><strong id="onAirStatusLabel">방송 준비</strong></div>
         <p class="eyebrow">DEV STUDIO BROADCAST</p>
         <h1>녹화 준비 화면</h1>
         <p class="subcopy">실제 녹화·스트리밍 기능 없이, 방송에 담을 개발 현황을 보여 주는 화면입니다.</p>
+      </section>
+
+      <section class="on-air-timer" aria-labelledby="onAirTimerHeading">
+        <div>
+          <p class="card-label">PREPARATION TIMER</p>
+          <h2 id="onAirTimerHeading">방송 준비 타이머</h2>
+          <p>방송 준비에 걸린 시간을 확인하는 타이머입니다. 실제 녹화나 송출은 하지 않습니다.</p>
+        </div>
+        <div class="on-air-timer-controls">
+          <strong class="on-air-timer-display" id="onAirTimerDisplay" aria-live="polite">00:00:00</strong>
+          <div class="broadcast-actions">
+            <button class="primary" id="onAirTimerStart" type="button">타이머 시작</button>
+            <button class="secondary" id="onAirTimerPause" type="button">일시정지</button>
+            <button class="secondary" id="onAirTimerReset" type="button">초기화</button>
+          </div>
+        </div>
       </section>
 
       <section class="hero-grid on-air-hero">
@@ -167,7 +183,7 @@
           <p id="onAirSummary"></p>
           <div class="progress-row"><span>진행률</span><strong id="onAirProgressText"></strong></div>
           <div class="progress-track"><span id="onAirProgressBar"></span></div>
-          <div class="on-air-ready">방송 준비 중 · 녹화 장비를 연결하면 시작할 수 있습니다.</div>
+          <div class="on-air-ready">방송 준비 중 · 타이머는 준비 시간만 기록하며 실제 녹화·송출은 하지 않습니다.</div>
         </article>
         <aside class="next-card">
           <div class="card-label">NEXT TASK</div>
