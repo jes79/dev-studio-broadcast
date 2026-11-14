@@ -44,6 +44,27 @@
           <div class="next-meta"><span id="nextDate"></span><strong id="nextType"></strong></div>
         </aside>
       </section>
+      <section class="section-block broadcast-planner">
+        <div class="section-heading"><div><p class="eyebrow">TODAY'S BROADCAST</p><h2>오늘의 방송 만들기</h2></div></div>
+        <form class="broadcast-form" id="broadcastForm" novalidate>
+          <label for="broadcastTopic">오늘 방송 주제 <span>*</span></label>
+          <input id="broadcastTopic" name="topic" required placeholder="예: 코인 획득 기능 만들기">
+          <label for="broadcastGoal">오늘 끝낼 목표 <span>*</span></label>
+          <textarea id="broadcastGoal" name="goal" rows="3" required placeholder="예: 코인을 먹으면 점수가 올라가고 효과가 보이게 하기"></textarea>
+          <div class="broadcast-form-grid">
+            <div><label for="broadcastLink">보여줄 링크 <small>(선택)</small></label><input id="broadcastLink" name="link" type="url" placeholder="https://"></div>
+            <div><label for="broadcastDuration">예상 시간 <small>(선택)</small></label><input id="broadcastDuration" name="duration" placeholder="예: 60분"></div>
+          </div>
+          <p class="form-error" id="broadcastFormError" role="alert" hidden></p>
+          <div class="conversation-form-footer"><span>방송 내용은 이 브라우저에만 저장됩니다.</span><button class="primary" type="submit">방송 시작</button></div>
+        </form>
+      </section>
+
+      <section class="section-block">
+        <div class="section-heading"><div><p class="eyebrow">BROADCAST HISTORY</p><h2>최근 방송</h2></div><span id="sessionHistoryStatus"></span></div>
+        <div class="log-grid" id="sessionHistoryList"></div>
+      </section>
+
 
       <section class="section-block">
         <div class="section-heading"><div><p class="eyebrow">RECENT LOG</p><h2>최근 개발 기록</h2></div><span id="logStatus"></span></div>
@@ -185,6 +206,27 @@
             <button class="secondary" id="onAirTimerReset" type="button">초기화</button>
           </div>
         </div>
+      </section>
+      <section class="on-air-session" aria-live="polite">
+        <div class="on-air-session-head"><div><p class="card-label">TODAY'S SESSION</p><h2 id="sessionTopic"></h2></div><span class="session-state" id="sessionState"></span></div>
+        <p class="session-goal"><strong>오늘의 목표</strong><span id="sessionGoal"></span></p>
+        <p class="session-meta" id="sessionMeta"></p>
+        <div class="broadcast-actions">
+          <button class="primary" id="startBroadcast" type="button">방송 진행 시작</button>
+          <button class="secondary" id="finishBroadcast" type="button">방송 마감</button>
+        </div>
+      </section>
+      <section class="broadcast-finish" id="broadcastFinish" hidden>
+        <p class="card-label">BROADCAST WRAP-UP</p><h2>오늘 방송을 마무리해요</h2>
+        <form class="broadcast-form" id="finishForm" novalidate>
+          <label for="resultText">결과 한 줄 <span>*</span></label>
+          <input id="resultText" required placeholder="예: 코인 획득과 점수 표시를 완성했습니다.">
+          <label for="nextTask">다음 작업 <span>*</span></label>
+          <textarea id="nextTask" rows="2" required placeholder="예: 코인 효과음을 추가하기"></textarea>
+          <fieldset><legend>오늘 목표 상태</legend><label><input type="radio" name="completion" value="completed" checked> 완료</label><label><input type="radio" name="completion" value="partial"> 부분 완료</label><label><input type="radio" name="completion" value="pending"> 보류</label></fieldset>
+          <p class="form-error" id="finishFormError" role="alert" hidden></p>
+          <div class="conversation-form-footer"><span>저장 전에는 완료 기록으로 남지 않습니다.</span><button class="primary" type="submit">기록 저장</button></div>
+        </form>
       </section>
 
       <section class="hero-grid on-air-hero">

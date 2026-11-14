@@ -67,6 +67,44 @@ const saveConversations = () => {
 saveConversations()
 const $ = selector => document.querySelector(selector)
 const escapeHtml = value => String(value).replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]))
+const sessionKey = 'dev-studio-broadcast.current-session'
+const historyKey = 'dev-studio-broadcast.session-history'
+const loadJson = (key, fallback) => {
+  try {
+    const value = JSON.parse(localStorage.getItem(key) || 'null')
+    return value ?? fallback
+  } catch { return fallback }
+}
+let currentSession = loadJson(sessionKey, null)
+let sessionHistory = loadJson(historyKey, [])
+if (!Array.isArray(sessionHistory)) sessionHistory = []
+const saveSession = () => {
+  if (currentSession) localStorage.setItem(sessionKey, JSON.stringify(currentSession))
+  else localStorage.removeItem(sessionKey)
+}
+const saveHistory = () => localStorage.setItem(historyKey, JSON.stringify(sessionHistory))
+const statusLabels = { ready: '준비', running: '진행 중', finished: '마감', completed: '완료', partial: '부분 완료', pending: '보류' }
+const renderSessionHistory = () => {
+  const list = $('#sessionHistoryList')
+  if (!list) return
+  $('#sessionHistoryStatus').textContent = `${sessionHistory.length}개의 방송`
+  list.innerHTML = sessionHistory.length ? sessionHistory.slice(0, 6).map(item => `<article class="log-card session-log-card"><div class="log-date">${escapeHtml(item.date)}</div><h3>${escapeHtml(item.topic)}</h3><p><strong>${escapeHtml(statusLabels[item.completion] || item.completion)}</strong> · ${escapeHtml(item.result)}</p><small>다음 작업: ${escapeHtml(item.nextTask)}</small></article>`).join('') : '<article class="log-card"><h3>아직 저장된 방송이 없습니다</h3><p>오늘의 방송을 만들고 결과를 저장해 보세요.</p></article>'
+}
+const renderSession = () => {
+  const sessionPanel = $('.on-air-session')
+  const finishPanel = $('#broadcastFinish')
+  if (!sessionPanel) return
+  const hasSession = Boolean(currentSession)
+  sessionPanel.hidden = !hasSession
+  finishPanel.hidden = !hasSession || currentSession.status !== 'finished'
+  if (!hasSession) return
+  $('#sessionTopic').textContent = currentSession.topic
+  $('#sessionGoal').textContent = currentSession.goal
+  $('#sessionMeta').textContent = [currentSession.link ? `링크: ${currentSession.link}` : '', currentSession.duration ? `예상 시간: ${currentSession.duration}` : ''].filter(Boolean).join(' · ') || '오늘 방송 세션'
+  $('#sessionState').textContent = statusLabels[currentSession.status] || '준비'
+  $('#startBroadcast').hidden = currentSession.status !== 'ready'
+  $('#finishBroadcast').hidden = currentSession.status !== 'running'
+}
 
 const renderLogs = (listSelector, statusSelector, logs, status) => {
   const list = $(listSelector)
@@ -94,6 +132,7 @@ const renderDashboardData = () => {
   const hasWorkUrl = Boolean(broadcast.game.repo)
   $('#playVideo').hidden = !hasWorkUrl
   $('#openRepo').hidden = !hasWorkUrl
+  renderSessionHistory()
   renderLogs('#logList', '#logStatus', recentLogs, `${recentLogs.length}개의 기록`)
 }
 
@@ -116,6 +155,63 @@ const renderChannelData = () => {
     repoLink.removeAttribute('href')
     repoLink.hidden = true
   }
+}
+const bindBroadcastControls = () => {
+  $('#broadcastForm').addEventListener('submit', event => {
+    event.preventDefault()
+    const topic = $('#broadcastTopic').value.trim()
+    const goal = $('#broadcastGoal').value.trim()
+    const error = $('#broadcastFormError')
+    if (!topic || !goal) {
+      error.textContent = '방송 주제와 오늘 끝낼 목표를 입력해 주세요.'
+      error.hidden = false
+      return
+    }
+    error.hidden = true
+    currentSession = {
+      id: Date.now().toString(),
+      topic,
+      goal,
+      link: $('#broadcastLink').value.trim(),
+      duration: $('#broadcastDuration').value.trim(),
+      status: 'ready',
+      createdAt: Date.now()
+    }
+    saveSession()
+    window.location.hash = '#/on-air'
+  })
+  $('#startBroadcast').addEventListener('click', () => {
+    if (!currentSession) return
+    currentSession.status = 'running'
+    currentSession.startedAt = Date.now()
+    saveSession()
+    renderSession()
+  })
+  $('#finishBroadcast').addEventListener('click', () => {
+    if (!currentSession) return
+    currentSession.status = 'finished'
+    saveSession()
+    renderSession()
+  })
+  $('#finishForm').addEventListener('submit', event => {
+    event.preventDefault()
+    const result = $('#resultText').value.trim()
+    const nextTask = $('#nextTask').value.trim()
+    const error = $('#finishFormError')
+    if (!result || !nextTask) {
+      error.textContent = '결과와 다음 작업을 입력해 주세요.'
+      error.hidden = false
+      return
+    }
+    const completion = document.querySelector('input[name="completion"]:checked').value
+    sessionHistory.unshift({ ...currentSession, result, nextTask, completion, date: new Intl.DateTimeFormat('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date()).replaceAll(' ', '') })
+    saveHistory()
+    currentSession = null
+    saveSession()
+    resetTimer()
+    renderSessionHistory()
+    window.location.hash = '#/dashboard'
+  })
 }
 
 const renderChannels = () => {
@@ -257,6 +353,7 @@ const renderOnAir = () => {
   $('#onAirNextDate').textContent = broadcast.next.date
   $('#onAirNextType').textContent = broadcast.next.type
   renderLogs('#onAirLogList', '#onAirLogStatus', recentLogs.slice(0, 3), `${Math.min(recentLogs.length, 3)}개의 기록`)
+  renderSession()
   renderTimer()
 }
 
@@ -322,6 +419,7 @@ renderConversations('#channelConversationList', '#channelConversationCount')
 bindConversationForm('#dashboardConversationForm', '#conversationInput', '#conversationList', '#conversationCount')
 bindConversationForm('#channelConversationForm', '#channelConversationInput', '#channelConversationList', '#channelConversationCount')
 bindTimerControls()
+bindBroadcastControls()
 $('#hostNextLine').addEventListener('click', showNextHostLine)
 
 const githubCommitsUrl = 'https://api.github.com/repos/jes79/dev-studio-broadcast/commits?per_page=3'
