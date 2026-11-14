@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dev Studio Broadcast</title>
+  <link rel="stylesheet" href="src/styles.css">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">DEV STUDIO BROADCAST</p>
+        <h1>오늘의 개발 방송</h1>
+        <p class="subcopy">만드는 과정을 방송처럼 기록하고 보여 주는 작업 전시관</p>
+      </div>
+      <div class="live-pill"><span></span> 개발 중</div>
+    </header>
+
+    <section class="hero-grid">
+      <article class="broadcast-card">
+        <div class="card-label">NOW BUILDING</div>
+        <div class="broadcast-main">
+          <div>
+            <p class="project-kicker" id="gameGenre"></p>
+            <h2 id="gameTitle"></h2>
+            <p id="gameSummary"></p>
+            <div class="progress-row"><span>진행률</span><strong id="gameProgressText"></strong></div>
+            <div class="progress-track"><span id="gameProgressBar"></span></div>
+          </div>
+          <div class="signal-box"><div class="signal-dot"></div><span>LIVE</span><small>작업 신호 정상</small></div>
+        </div>
+        <div class="broadcast-actions">
+          <button class="primary" id="playVideo">최근 영상 보기</button>
+          <button class="secondary" id="openRepo">GitHub 열기</button>
+        </div>
+      </article>
+
+      <aside class="next-card">
+        <div class="card-label">NEXT ON AIR</div>
+        <h3 id="nextTitle"></h3>
+        <p id="nextDescription"></p>
+        <div class="next-meta"><span id="nextDate"></span><strong id="nextType"></strong></div>
+      </aside>
+    </section>
+
+    <section class="section-block">
+      <div class="section-heading"><div><p class="eyebrow">RECENT LOG</p><h2>최근 개발 기록</h2></div><span id="logCount"></span></div>
+      <div class="log-grid" id="logList"></div>
+    </section>
+
+    <section class="section-block">
+      <div class="section-heading"><div><p class="eyebrow">CHANNELS</p><h2>작품 채널</h2></div><button class="text-button" id="showAll">전체 보기</button></div>
+      <div class="channel-grid" id="channelList"></div>
+    </section>
+
+    <footer><span>dev-studio-broadcast</span><span>첫 방송 준비 중 · 오래 만드는 프로젝트</span></footer>
+  </main>
+  <script src="src/app.js"></script>
+</body>
+</html>
