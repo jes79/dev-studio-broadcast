@@ -25,6 +25,6 @@ $('#nextType').textContent = broadcast.next.type
 $('#logCount').textContent = `${broadcast.logs.length}개의 기록`
 $('#logList').innerHTML = broadcast.logs.map(log => `<article class="log-card"><div class="log-date">${log.date}</div><h3>${log.title}</h3><p>${log.body}</p><small>${log.time}</small></article>`).join('')
 $('#channelList').innerHTML = broadcast.channels.map(channel => `<article class="channel-card"><div class="channel-tag">${channel.tag}</div><h3>${channel.title}</h3><p>${channel.body}</p><div class="channel-footer"><span>진행 상태</span><strong>${channel.progress}</strong></div></article>`).join('')
-$('#playVideo').addEventListener('click', () => window.open(broadcast.game.video, '_blank'))
+$('#playVideo').addEventListener('click', () => broadcast.game.video === '#' ? alert('최근 영상 링크는 다음 단계에서 연결합니다.') : window.open(broadcast.game.video, '_blank'))
 $('#openRepo').addEventListener('click', () => window.open(broadcast.game.repo, '_blank'))
 $('#showAll').addEventListener('click', () => alert('작품 채널 전체 보기는 다음 버전에서 연결합니다.'))
